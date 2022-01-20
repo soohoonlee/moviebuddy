@@ -3,18 +3,21 @@ package moviebuddy.domain;
 import moviebuddy.MovieBuddyFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.util.List;
 
 /**
  * @author springrunner.kr@gmail.com
  */
+@SpringJUnitConfig(MovieBuddyFactory.class)
 class MovieFinderTest {
 
-    final ApplicationContext applicationContext = new AnnotationConfigApplicationContext(MovieBuddyFactory.class);
-    final MovieFinder movieFinder = applicationContext.getBean(MovieFinder.class);
+    @Autowired MovieFinder movieFinder;
+
+    @Autowired ApplicationContext applicationContext;
 
     @Test
     void NotEmpty_directedBy() {
@@ -26,5 +29,10 @@ class MovieFinderTest {
     void NotEmpty_ReleasedYearBy() {
         final List<Movie> movies = movieFinder.releasedYearBy(2015);
         Assertions.assertEquals(225, movies.size());
+    }
+
+    @Test
+    void Equals_MovieFinderBean() {
+        Assertions.assertEquals(movieFinder, applicationContext.getBean(MovieFinder.class));
     }
 }

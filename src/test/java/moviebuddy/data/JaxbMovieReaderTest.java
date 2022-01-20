@@ -1,6 +1,7 @@
-package moviebuddy.domain;
+package moviebuddy.data;
 
 import moviebuddy.MovieBuddyFactory;
+import moviebuddy.domain.Movie;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -13,9 +13,10 @@ import java.util.List;
 
 @ActiveProfiles(MovieBuddyProfile.XML_MODE)
 @SpringJUnitConfig(MovieBuddyFactory.class)
-class JaxbMovieReaderTest {
+class XmlMovieReaderTest {
 
-    @Autowired JaxbMovieReader movieReader;
+    @Autowired
+    XmlMovieReader movieReader;
 
     @Test
     void NotEmpty_LoadedMovies() {

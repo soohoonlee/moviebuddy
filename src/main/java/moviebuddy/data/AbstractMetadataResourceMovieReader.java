@@ -4,20 +4,19 @@ import moviebuddy.ApplicationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ResourceLoaderAware;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.FileNotFoundException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Objects;
 
-public abstract class AbstractFileSystemMovieReader {
+public abstract class AbstractMetadataResourceMovieReader implements ResourceLoaderAware {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
     private String metadata;
+    private ResourceLoader resourceLoader;
 
     public String getMetadata() {
         return metadata;
@@ -28,16 +27,25 @@ public abstract class AbstractFileSystemMovieReader {
         this.metadata = metadata;
     }
 
+    public Resource getMetadataResource() {
+        return resourceLoader.getResource(getMetadata());
+    }
+
+    @Override
+    public void setResourceLoader(final ResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
+    }
+
     @PostConstruct
-    public void afterPropertiesSet() throws FileNotFoundException, URISyntaxException {
-        final URL metadataUrl = ClassLoader.getSystemResource(metadata);
-        if (Objects.isNull(metadataUrl)) {
+    public void afterPropertiesSet() throws FileNotFoundException {
+        final Resource resource = getMetadataResource();
+        if (!resource.exists()) {
             throw new FileNotFoundException(metadata);
         }
-
-        if (!Files.isReadable(Path.of(metadataUrl.toURI()))) {
+        if (!resource.isReadable()) {
             throw new ApplicationException(String.format("cannot read to metadata. [%s]", metadata));
         }
+        log.info("{} is ready.", resource);
     }
 
     @PreDestroy
